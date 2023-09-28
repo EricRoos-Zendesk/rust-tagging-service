@@ -15,8 +15,8 @@ pub struct TaggingDelta {
 }
 
 pub fn get_diffs_from(original_tags: &HashSet<String>, next_state: &HashSet<String>, timestamp: i64) -> Vec<TaggingDelta> {
-    let added = next_state.difference(&original_tags);
-    let removed = original_tags.difference(&next_state);
+    let added = next_state.difference(original_tags);
+    let removed = original_tags.difference(next_state);
     let mut diffs = Vec::new();
     for tag in added.into_iter() {
         diffs.push(TaggingDelta {
@@ -34,7 +34,7 @@ pub fn get_diffs_from(original_tags: &HashSet<String>, next_state: &HashSet<Stri
             ticket_id: 0
         });
     }
-    return diffs;
+    diffs
 }
 
 fn main() {
