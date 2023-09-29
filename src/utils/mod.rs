@@ -1,20 +1,21 @@
 use std::collections::HashSet;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq)]
-enum TaggingOperation {
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub enum TaggingOperation {
     Add(String),
     Remove(String)
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TaggingDelta {
-    timestamp_epoch_ms: i64,
-    operation: TaggingOperation,
-    account_id: i64,
-    ticket_id: i64
+    pub timestamp_epoch_ms: u128,
+    pub operation: TaggingOperation,
+    pub account_id: i64,
+    pub ticket_id: i64
 }
 
-pub fn get_diffs_from(original_tags: &HashSet<String>, next_state: &HashSet<String>, timestamp: i64) -> Vec<TaggingDelta> {
+pub fn get_diffs_from(original_tags: &HashSet<String>, next_state: &HashSet<String>, timestamp: u128, ticket_id: i64) -> Vec<TaggingDelta> {
     let added = next_state.difference(original_tags);
     let removed = original_tags.difference(next_state);
     let mut diffs = Vec::new();
@@ -23,7 +24,7 @@ pub fn get_diffs_from(original_tags: &HashSet<String>, next_state: &HashSet<Stri
             timestamp_epoch_ms: timestamp,
             operation: TaggingOperation::Add(tag.to_string()),
             account_id: 0,
-            ticket_id: 0
+            ticket_id: ticket_id
         });
     }
     for tag in removed.into_iter() {
@@ -35,9 +36,6 @@ pub fn get_diffs_from(original_tags: &HashSet<String>, next_state: &HashSet<Stri
         });
     }
     diffs
-}
-
-fn main() {
 }
 
 #[cfg(test)]
@@ -56,7 +54,7 @@ mod tests {
         next_state.insert("B".to_string());
         next_state.insert("C".to_string());
 
-        let result = utils::get_diffs_from(&original, &next_state, 0);
+        let result = utils::get_diffs_from(&original, &next_state, 0,0);
         let mut expected = Vec::new();
         expected.push(utils::TaggingDelta {
             timestamp_epoch_ms: 0,
@@ -76,7 +74,7 @@ mod tests {
         let mut next_state = HashSet::new();
         next_state.insert("A".to_string());
 
-        let result = crate::utils::get_diffs_from(&original, &next_state, 0);
+        let result = utils::get_diffs_from(&original, &next_state, 0,0);
         let mut expected = Vec::new();
         expected.push(utils::TaggingDelta {
             timestamp_epoch_ms: 0,

@@ -1,0 +1,15 @@
+syntax="proto3";
+package taggingservice;
+
+service Changer {
+	rpc ChangeTags(ChangeTagsRequest) returns (ChangeTagsReply);
+}
+
+message ChangeTagsRequest {
+	repeated string originalTags = 1;
+	repeated string nextState = 2;
+	int64 ticketId = 3;
+}
+
+message ChangeTagsReply{}
+
